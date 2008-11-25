@@ -25,3 +25,5 @@ library
                    RankNTypes
   exposed-modules: GHC.SYB.Instances,
                    GHC.SYB.Utils
+  if impl(ghc > 6.11.20081030)
+    cpp-options:   -DHAS_ANNOTATIONS

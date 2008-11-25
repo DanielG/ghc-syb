@@ -394,5 +394,13 @@ deriving instance (Data a,Data b) => Data (HsRecFields a b)
 deriving instance Typeable2 HsRecField
 deriving instance (Data a,Data b) => Data (HsRecField a b)
 
+#ifdef HAS_ANNOTATIONS
+deriving instance Data a => Data (AnnDecl a)
+deriving instance Typeable1 AnnDecl
+
+deriving instance Data a => Data (AnnProvenance a)
+deriving instance Typeable1 AnnProvenance
+#endif
+
 #endif 
 
