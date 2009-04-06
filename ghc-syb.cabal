@@ -11,7 +11,7 @@ synopsis:        SYB instances for the GHC API
 category:        Development
 stability:       provisional
 build-type:      Simple
-cabal-version:   >= 1.2
+cabal-version:   >= 1.2.3
 tested-with:     GHC ==6.10.1
 -- extra-source-files: README
 
