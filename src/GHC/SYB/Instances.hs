@@ -149,6 +149,14 @@ instance Data Var where
 deriving instance Typeable InlineSpec
 deriving instance Data InlineSpec
 
+#ifdef CONSTRUCTOR_LIKE_IDS
+deriving instance Typeable InlinePragma
+deriving instance Data InlinePragma
+
+deriving instance Typeable RuleMatchInfo
+deriving instance Data RuleMatchInfo
+#endif
+
 deriving instance Typeable ForeignImport
 deriving instance Data ForeignImport
 
