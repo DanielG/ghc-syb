@@ -47,6 +47,10 @@ import BasicTypes
 import Var
 import ForeignCall
 
+import CoreSyn
+import Literal
+import CostCentre
+
 import Data.Data
 import NameSet
 import TypeRep
@@ -235,6 +239,28 @@ deriving instance Data Type
 deriving instance Typeable HsLit
 deriving instance Data HsLit
 
+deriving instance Typeable Note
+deriving instance Data Note
+
+deriving instance Typeable AltCon
+deriving instance Data AltCon
+
+deriving instance Typeable Literal
+deriving instance Data Literal
+
+deriving instance Typeable CostCentre
+deriving instance Data CostCentre
+
+deriving instance Typeable FunctionOrData
+deriving instance Data FunctionOrData
+
+deriving instance Typeable IsDupdCC
+deriving instance Data IsDupdCC
+
+deriving instance Typeable IsCafCC
+deriving instance Data IsCafCC
+
+
 -- Typeable1
 
 deriving instance Typeable1 Located
@@ -378,6 +404,12 @@ deriving instance Data a => Data (Match a)
 
 deriving instance Typeable1 RuleBndr
 deriving instance Data a => Data (RuleBndr a)
+
+deriving instance Typeable1 Bind
+deriving instance Data a => Data (Bind a)
+
+deriving instance Typeable1 Expr
+deriving instance Data a => Data (Expr a)
 
 -- Typeable2
 
