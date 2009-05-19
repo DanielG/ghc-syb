@@ -1,5 +1,5 @@
 name:            ghc-syb
-version:         0.1.2
+version:         0.1.2.1
 license:         BSD3
 license-file:    LICENSE
 author:          Claus Reinke
@@ -29,3 +29,5 @@ library
     cpp-options:   -DHAS_ANNOTATIONS
   if impl(ghc >= 6.11.20090318)
     cpp-options:   -DCONSTRUCTOR_LIKE_IDS
+  if impl(ghc >= 6.10.2)
+    cpp-options:   -DHAS_FUNCTION_OR_DATA

@@ -251,8 +251,10 @@ deriving instance Data Literal
 deriving instance Typeable CostCentre
 deriving instance Data CostCentre
 
+#ifdef HAS_FUNCTION_OR_DATA
 deriving instance Typeable FunctionOrData
 deriving instance Data FunctionOrData
+#endif
 
 deriving instance Typeable IsDupdCC
 deriving instance Data IsDupdCC
