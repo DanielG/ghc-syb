@@ -17,7 +17,7 @@ abstract types, we use one of two schemes:
       -- don't traverse?
       toConstr _   = abstractConstr "SrcSpan"
       gunfold _ _  = error "gunfold"
-      dataTypeOf _ = mkNorepType "SrcSpan"
+      dataTypeOf _ = mkNoRepType "SrcSpan"
 @
 
 - abstract traversal: 'NameSet', 'Bag'
@@ -27,7 +27,7 @@ abstract types, we use one of two schemes:
       gfoldl k z s = z mkNameSet `k` nameSetToList s -- traverse abstractly
       toConstr _   = abstractConstr "NameSet"
       gunfold _ _  = error "gunfold"
-      dataTypeOf _ = mkNorepType "NameSet"
+      dataTypeOf _ = mkNoRepType "NameSet"
 @
 
 Please report any issues, either with these abstract instances or with
@@ -65,6 +65,10 @@ import qualified TyCon
 abstractConstr   n = mkConstr (abstractDataType n) ("{abstract:"++n++"}") [] Prefix
 abstractDataType n = mkDataType n [abstractConstr n]
 
+#ifndef CAN_SPELL
+mkNoRepType = mkNorepType
+#endif
+
 -- Typeable0
 
 INSTANCE_TYPEABLE0(SrcSpan,srcSpanTc,"SrcSpan")
@@ -72,21 +76,21 @@ instance Data SrcSpan where
   -- don't traverse?
   toConstr _   = abstractConstr "SrcSpan"
   gunfold _ _  = error "gunfold"
-  dataTypeOf _ = mkNorepType "SrcSpan"
+  dataTypeOf _ = mkNoRepType "SrcSpan"
 
 INSTANCE_TYPEABLE0(Module,moduleTc,"Module")
 instance Data Module where
   -- don't traverse?
   toConstr _   = abstractConstr "Module"
   gunfold _ _  = error "gunfold"
-  dataTypeOf _ = mkNorepType "Module"
+  dataTypeOf _ = mkNoRepType "Module"
 
 INSTANCE_TYPEABLE0(ModuleName,moduleNameTc,"ModuleName")
 instance Data ModuleName where
   -- don't traverse?
   toConstr _   = abstractConstr "ModuleName"
   gunfold _ _  = error "gunfold"
-  dataTypeOf _ = mkNorepType "ModuleName"
+  dataTypeOf _ = mkNoRepType "ModuleName"
 
 deriving instance Typeable RdrName
 deriving instance Data RdrName
@@ -96,21 +100,21 @@ instance Data OccName where
   -- don't traverse?
   toConstr _   = abstractConstr "OccName"
   gunfold _ _  = error "gunfold"
-  dataTypeOf _ = mkNorepType "OccName"
+  dataTypeOf _ = mkNoRepType "OccName"
 
 INSTANCE_TYPEABLE0(Name,nameTc,"Name")
 instance Data Name where
   -- don't traverse?
   toConstr _   = abstractConstr "Name"
   gunfold _ _  = error "gunfold"
-  dataTypeOf _ = mkNorepType "Name"
+  dataTypeOf _ = mkNoRepType "Name"
 
 deriving instance Typeable FastString
 instance Data FastString where
   -- don't traverse?
   toConstr _   = abstractConstr "FastString"
   gunfold _ _  = error "gunfold"
-  dataTypeOf _ = mkNorepType "FastString"
+  dataTypeOf _ = mkNoRepType "FastString"
 
 deriving instance Typeable HsExplicitForAll
 deriving instance Data HsExplicitForAll
@@ -141,14 +145,14 @@ instance Data DataCon where
   -- don't traverse?
   toConstr _   = abstractConstr "DataCon"
   gunfold _ _  = error "gunfold"
-  dataTypeOf _ = mkNorepType "DataCon"
+  dataTypeOf _ = mkNoRepType "DataCon"
 
 INSTANCE_TYPEABLE0(Var,varTc,"Var")
 instance Data Var where
   -- don't traverse?
   toConstr _   = abstractConstr "Var"
   gunfold _ _  = error "gunfold"
-  dataTypeOf _ = mkNorepType "Var"
+  dataTypeOf _ = mkNoRepType "Var"
 
 deriving instance Typeable InlineSpec
 deriving instance Data InlineSpec
@@ -173,8 +177,10 @@ deriving instance Data CImportSpec
 deriving instance Typeable CExportSpec
 deriving instance Data CExportSpec
 
+#if HAS_DN_STUFF
 deriving instance Typeable DNCallSpec
 deriving instance Data DNCallSpec
+#endif
 
 deriving instance Typeable Safety
 deriving instance Data Safety
@@ -182,11 +188,13 @@ deriving instance Data Safety
 deriving instance Typeable CCallConv
 deriving instance Data CCallConv
 
+#if HAS_DN_STUFF
 deriving instance Typeable DNKind
 deriving instance Data DNKind
 
 deriving instance Typeable DNType
 deriving instance Data DNType
+#endif
 
 deriving instance Typeable CCallTarget
 deriving instance Data CCallTarget
@@ -199,10 +207,12 @@ instance Data NameSet where
   gfoldl k z s = z mkNameSet `k` nameSetToList s -- traverse abstractly
   toConstr _   = abstractConstr "NameSet"
   gunfold _ _  = error "gunfold"
-  dataTypeOf _ = mkNorepType "NameSet"
+  dataTypeOf _ = mkNoRepType "NameSet"
 
+#if HAS_FOTYPE
 deriving instance Typeable FoType
 deriving instance Data FoType
+#endif
 
 deriving instance Typeable FamilyFlavour
 deriving instance Data FamilyFlavour
@@ -215,14 +225,14 @@ instance Data TyCon.TyCon where
   -- don't traverse?
   toConstr _   = abstractConstr "TyCon.TyCon"
   gunfold _ _  = error "gunfold"
-  dataTypeOf _ = mkNorepType "TyCon.TyCon"
+  dataTypeOf _ = mkNoRepType "TyCon.TyCon"
 
 INSTANCE_TYPEABLE0(Class,classTc,"Class")
 instance Data Class where
   -- don't traverse?
   toConstr _   = abstractConstr "Class"
   gunfold _ _  = error "gunfold"
-  dataTypeOf _ = mkNorepType "Class"
+  dataTypeOf _ = mkNoRepType "Class"
 
 deriving instance Typeable Prag
 deriving instance Data Prag
@@ -262,6 +272,13 @@ deriving instance Data IsDupdCC
 deriving instance Typeable IsCafCC
 deriving instance Data IsCafCC
 
+#if HAS_SIMPLE_DOCS
+deriving instance Typeable HsDocString
+deriving instance Data HsDocString
+
+deriving instance Typeable DocDecl
+deriving instance Data DocDecl
+#endif
 
 -- Typeable1
 
@@ -271,11 +288,13 @@ deriving instance Data e => Data (Located e)
 deriving instance Typeable1 HsModule
 deriving instance Data a => Data (HsModule a)
 
+#if !HAS_SIMPLE_DOCS
 deriving instance Typeable1 HsDoc
 deriving instance Data a => Data (HsDoc a)
 
 deriving instance Typeable1 HaddockModInfo
 deriving instance Data a => Data (HaddockModInfo a)
+#endif
 
 deriving instance Typeable1 HsDecl
 deriving instance Data a => Data (HsDecl a)
@@ -288,9 +307,6 @@ deriving instance Data a => Data (IE a)
 
 deriving instance Typeable1 TyClDecl
 deriving instance Data a => Data (TyClDecl a)
-
-deriving instance Typeable1 DocDecl
-deriving instance Data a => Data (DocDecl a)
 
 deriving instance Typeable1 SpliceDecl
 deriving instance Data a => Data (SpliceDecl a)
@@ -333,7 +349,7 @@ instance Data a => Data (Bag a) where
   gfoldl k z b = z listToBag `k` bagToList b -- traverse abstract type abstractly
   toConstr _   = abstractConstr $ "Bag("++show (typeOf (undefined::a))++")"
   gunfold _ _  = error "gunfold"
-  dataTypeOf _ = mkNorepType "Bag"
+  dataTypeOf _ = mkNoRepType "Bag"
 
 deriving instance Typeable1 HsTyVarBndr
 deriving instance Data a => Data (HsTyVarBndr a)
@@ -412,6 +428,11 @@ deriving instance Data a => Data (Bind a)
 
 deriving instance Typeable1 Expr
 deriving instance Data a => Data (Expr a)
+
+#if HAS_TUPARG
+deriving instance Typeable1 HsTupArg
+deriving instance Data a => Data (HsTupArg a)
+#endif
 
 -- Typeable2
 
