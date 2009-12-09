@@ -278,6 +278,9 @@ deriving instance Data HsDocString
 
 deriving instance Typeable DocDecl
 deriving instance Data DocDecl
+#else
+deriving instance Typeable1 DocDecl
+deriving instance Data a => Data (DocDecl a)
 #endif
 
 -- Typeable1
@@ -465,5 +468,6 @@ deriving instance Data a => Data (AnnProvenance a)
 deriving instance Typeable1 AnnProvenance
 #endif
 
-#endif 
+-- end of ifdef __HADDOCK__
+#endif
 
