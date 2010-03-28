@@ -1,0 +1,26 @@
+name:            ghc-syb-utils
+version:         0.2.0.0
+license:         BSD3
+license-file:    LICENSE
+author:          Claus Reinke
+copyright:       (c) Claus Reinke 2008
+maintainer:      Thomas Schilling <nominolo@googlemail.com>
+homepage:        http://github.com/nominolo/ghc-syb
+description:     Scrap Your Boilerplate utilities for the GHC API.
+synopsis:        Scrap Your Boilerplate utilities for the GHC API.
+category:        Development
+stability:       provisional
+build-type:      Simple
+cabal-version:   >= 1.6
+tested-with:     GHC ==6.10.4, GHC ==6.12.1
+
+library
+  build-depends:   base >= 4 && < 5,
+                   ghc-syb == 0.2.*,
+                   syb == 0.1.*,
+                   ghc >= 6.10 && < 6.14
+                   
+  hs-source-dirs:  .
+  extensions:      Rank2Types
+
+  exposed-modules: GHC.SYB.Utils
