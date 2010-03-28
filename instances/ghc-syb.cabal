@@ -19,7 +19,7 @@ library
   build-depends:   base >= 4 && < 5,
                    syb >= 0.1 && < 0.2,
                    ghc >= 6.10 && < 6.14
-  hs-source-dirs:  src
+  hs-source-dirs:  .
   extensions:      CPP, TypeSynonymInstances, StandaloneDeriving,
                    DeriveDataTypeable, ScopedTypeVariables,
                    RankNTypes
