@@ -1,5 +1,5 @@
 name:            ghc-syb-utils
-version:         0.2.0.0
+version:         0.2.1.0
 license:         BSD3
 license-file:    LICENSE
 author:          Claus Reinke
@@ -15,12 +15,18 @@ cabal-version:   >= 1.6
 tested-with:     GHC ==6.10.4, GHC ==6.12.1
 
 library
-  build-depends:   base >= 4 && < 5,
-                   ghc-syb == 0.2.*,
-                   syb == 0.1.*,
-                   ghc >= 6.10 && < 6.14
-                   
+  build-depends:   base >= 4 && < 5
+                 , syb >= 0.1.0
+
+  if impl(ghc >= 7.0)
+    build-depends:
+      ghc
+  else
+    build-depends:
+      ghc >= 6.10,
+      ghc-syb == 0.2.*
+
   hs-source-dirs:  .
-  extensions:      Rank2Types
+  extensions:      Rank2Types, CPP
 
   exposed-modules: GHC.SYB.Utils

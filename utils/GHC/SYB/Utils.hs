@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {- | "GHC.Syb.Utils" provides common utilities for the Ghc Api,
      either based on Data\/Typeable or for use with Data.Generics
      over Ghc Api types.
@@ -185,7 +186,10 @@ import Var(Var)
 import FastString(FastString)
 import NameSet(NameSet,nameSetToList)
 
+#if __GLASGOW_HASKELL__ < 700
 import GHC.SYB.Instances
+#endif 
+
 import Data.List
 
 -- | Ghc Ast types tend to have undefined holes, to be filled
@@ -251,7 +255,7 @@ everythingStaged stage k z f x
 
 -- | A variation of 'everything', using a 'GenericQ Bool' to skip
 --   parts of the input 'Data'.
-everythingBut :: GenericQ Bool -> (r -> r -> r) -> r -> GenericQ r -> GenericQ r
-everythingBut q k z f x 
-  | q x       = z
-  | otherwise = foldl k (f x) (gmapQ (everythingBut q k z f) x)
+--everythingBut :: GenericQ Bool -> (r -> r -> r) -> r -> GenericQ r -> GenericQ r
+--everythingBut q k z f x 
+--  | q x       = z
+--  | otherwise = foldl k (f x) (gmapQ (everythingBut q k z f) x)
