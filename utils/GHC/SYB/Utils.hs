@@ -1,4 +1,5 @@
 {-# LANGUAGE CPP #-}
+{-# LANGUAGE RankNTypes #-}
 {- | "GHC.Syb.Utils" provides common utilities for the Ghc Api,
      either based on Data\/Typeable or for use with Data.Generics
      over Ghc Api types.
@@ -190,6 +191,7 @@ import NameSet(NameSet,nameSetToList)
 import GHC.SYB.Instances
 #endif 
 
+import Control.Monad
 import Data.List
 
 showSDoc_ :: SDoc -> String
@@ -268,3 +270,77 @@ everythingStaged stage k z f x
 --everythingBut q k z f x 
 --  | q x       = z
 --  | otherwise = foldl k (f x) (gmapQ (everythingBut q k z f) x)
+
+
+-- ++AZ++ additions
+
+-- Question: how to handle partial results in the otherwise step?
+everythingButStaged :: Stage -> (r -> r -> r) -> r -> GenericQ (r,Bool) -> GenericQ r
+everythingButStaged stage k z f x
+  | (const False `extQ` postTcType `extQ` fixity `extQ` nameSet) x = z
+  | stop == True = v
+  | otherwise = foldl k v (gmapQ (everythingButStaged stage k z f) x)
+  where (v, stop) = f x
+        nameSet    = const (stage `elem` [Parser,TypeChecker]) :: NameSet -> Bool
+        postTcType = const (stage<TypeChecker)                 :: PostTcType -> Bool
+        fixity     = const (stage<Renamer)                     :: GHC.Fixity -> Bool
+
+-- | Look up a subterm by means of a maybe-typed filter
+somethingStaged :: Stage -> (Maybe u) -> GenericQ (Maybe u) -> GenericQ (Maybe u)
+
+-- "something" can be defined in terms of "everything"
+-- when a suitable "choice" operator is used for reduction
+-- 
+somethingStaged stage z = everythingStaged stage orElse z
+
+
+-- | Apply a monadic transformation at least somewhere
+somewhereStaged :: MonadPlus m => Stage -> GenericM m -> GenericM m
+
+-- We try "f" in top-down manner, but descent into "x" when we fail
+-- at the root of the term. The transformation fails if "f" fails
+-- everywhere, say succeeds nowhere.
+-- 
+somewhereStaged stage f x 
+  | (const False `extQ` postTcType `extQ` fixity `extQ` nameSet) x = mzero
+  | otherwise = f x `mplus` gmapMp (somewhereStaged stage f) x
+  where nameSet    = const (stage `elem` [Parser,TypeChecker]) :: NameSet -> Bool
+        postTcType = const (stage<TypeChecker)                 :: PostTcType -> Bool
+        fixity     = const (stage<Renamer)                     :: GHC.Fixity -> Bool
+
+-- ---------------------------------------------------------------------
+
+{- 
+-- | Apply a transformation everywhere in bottom-up manner
+-- Note type GenericT = forall a. Data a => a -> a
+everywhereStaged :: Stage
+                    -> (forall a. Data a => a -> a)
+                    -> (forall a. Data a => a -> a)
+
+-- Use gmapT to recurse into immediate subterms;
+-- recall: gmapT preserves the outermost constructor;
+-- post-process recursively transformed result via f
+-- 
+everywhereStaged stage f -- = f . gmapT (everywhere f)
+  | (const False `extQ` postTcType `extQ` fixity `extQ` nameSet) = mzero
+  | otherwise = f . gmapT (everywhere stage f)
+  where nameSet    = const (stage `elem` [Parser,TypeChecker]) :: NameSet -> Bool
+        postTcType = const (stage<TypeChecker)                 :: PostTcType -> Bool
+        fixity     = const (stage<Renamer)                     :: GHC.Fixity -> Bool
+-}
+
+
+-- | Monadic variation on everywhere
+everywhereMStaged :: Monad m => Stage -> GenericM m -> GenericM m
+
+-- Bottom-up order is also reflected in order of do-actions
+everywhereMStaged stage f x
+  | (const False `extQ` postTcType `extQ` fixity `extQ` nameSet) x = return x
+  | otherwise = do x' <- gmapM (everywhereMStaged stage f) x
+                   f x'
+  where nameSet    = const (stage `elem` [Parser,TypeChecker]) :: NameSet -> Bool
+        postTcType = const (stage<TypeChecker)                 :: PostTcType -> Bool
+        fixity     = const (stage<Renamer)                     :: GHC.Fixity -> Bool
+                   
+
+
