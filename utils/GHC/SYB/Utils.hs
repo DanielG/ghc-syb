@@ -218,12 +218,12 @@ showData stage n =
         list l     = indent n ++ "[" 
                               ++ concat (intersperse "," (map (showData stage (n+1)) l)) ++ "]"
 
-        name       = ("{Name: "++) . (++"}") . showSDoc . ppr :: Name -> String
+        name       = ("{Name: "++) . (++"}") . showSDoc  tracingDynFlags. ppr :: Name -> String
         occName    = ("{OccName: "++) . (++"}") .  OccName.occNameString 
-        moduleName = ("{ModuleName: "++) . (++"}") . showSDoc . ppr :: ModuleName -> String
-        srcSpan    = ("{"++) . (++"}") . showSDoc . ppr :: SrcSpan -> String
-        var        = ("{Var: "++) . (++"}") . showSDoc . ppr :: Var -> String
-        dataCon    = ("{DataCon: "++) . (++"}") . showSDoc . ppr :: DataCon -> String
+        moduleName = ("{ModuleName: "++) . (++"}") . showSDoc tracingDynFlags . ppr :: ModuleName -> String
+        srcSpan    = ("{"++) . (++"}") . showSDoc tracingDynFlags . ppr :: SrcSpan -> String
+        var        = ("{Var: "++) . (++"}") . showSDoc tracingDynFlags . ppr :: Var -> String
+        dataCon    = ("{DataCon: "++) . (++"}") . showSDoc tracingDynFlags. ppr :: DataCon -> String
 
         bagRdrName:: Bag (Located (HsBind RdrName)) -> String
         bagRdrName = ("{Bag(Located (HsBind RdrName)): "++) . (++"}") . list . bagToList 
@@ -238,10 +238,10 @@ showData stage n =
                 = ("{NameSet: "++) . (++"}") . list . nameSetToList 
 
         postTcType | stage<TypeChecker = const "{!type placeholder here?!}" :: PostTcType -> String
-                   | otherwise     = showSDoc . ppr :: Type -> String
+                   | otherwise     = showSDoc tracingDynFlags . ppr :: Type -> String
 
         fixity | stage<Renamer = const "{!fixity placeholder here?!}" :: GHC.Fixity -> String
-               | otherwise     = ("{Fixity: "++) . (++"}") . showSDoc . ppr :: GHC.Fixity -> String
+               | otherwise     = ("{Fixity: "++) . (++"}") . showSDoc tracingDynFlags . ppr :: GHC.Fixity -> String
 
 -- | Like 'everything', but avoid known potholes, based on the 'Stage' that
 --   generated the Ast.
