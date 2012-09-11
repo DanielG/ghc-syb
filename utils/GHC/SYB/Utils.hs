@@ -192,6 +192,13 @@ import GHC.SYB.Instances
 
 import Data.List
 
+showSDoc_ :: SDoc -> String
+#if __GLASGOW_HASKELL__ < 706
+showSDoc_ = showSDoc
+#else
+showSDoc_ = showSDoc tracingDynFlags
+#endif
+
 -- | Ghc Ast types tend to have undefined holes, to be filled
 --   by later compiler phases. We tag Asts with their source,
 --   so that we can avoid such holes based on who generated the Asts.
@@ -218,12 +225,12 @@ showData stage n =
         list l     = indent n ++ "[" 
                               ++ concat (intersperse "," (map (showData stage (n+1)) l)) ++ "]"
 
-        name       = ("{Name: "++) . (++"}") . showSDoc  tracingDynFlags. ppr :: Name -> String
+        name       = ("{Name: "++) . (++"}") . showSDoc_ . ppr :: Name -> String
         occName    = ("{OccName: "++) . (++"}") .  OccName.occNameString 
-        moduleName = ("{ModuleName: "++) . (++"}") . showSDoc tracingDynFlags . ppr :: ModuleName -> String
-        srcSpan    = ("{"++) . (++"}") . showSDoc tracingDynFlags . ppr :: SrcSpan -> String
-        var        = ("{Var: "++) . (++"}") . showSDoc tracingDynFlags . ppr :: Var -> String
-        dataCon    = ("{DataCon: "++) . (++"}") . showSDoc tracingDynFlags. ppr :: DataCon -> String
+        moduleName = ("{ModuleName: "++) . (++"}") . showSDoc_ . ppr :: ModuleName -> String
+        srcSpan    = ("{"++) . (++"}") . showSDoc_ . ppr :: SrcSpan -> String
+        var        = ("{Var: "++) . (++"}") . showSDoc_ . ppr :: Var -> String
+        dataCon    = ("{DataCon: "++) . (++"}") . showSDoc_ . ppr :: DataCon -> String
 
         bagRdrName:: Bag (Located (HsBind RdrName)) -> String
         bagRdrName = ("{Bag(Located (HsBind RdrName)): "++) . (++"}") . list . bagToList 
@@ -238,10 +245,10 @@ showData stage n =
                 = ("{NameSet: "++) . (++"}") . list . nameSetToList 
 
         postTcType | stage<TypeChecker = const "{!type placeholder here?!}" :: PostTcType -> String
-                   | otherwise     = showSDoc tracingDynFlags . ppr :: Type -> String
+                   | otherwise     = showSDoc_ . ppr :: Type -> String
 
         fixity | stage<Renamer = const "{!fixity placeholder here?!}" :: GHC.Fixity -> String
-               | otherwise     = ("{Fixity: "++) . (++"}") . showSDoc tracingDynFlags . ppr :: GHC.Fixity -> String
+               | otherwise     = ("{Fixity: "++) . (++"}") . showSDoc_ . ppr :: GHC.Fixity -> String
 
 -- | Like 'everything', but avoid known potholes, based on the 'Stage' that
 --   generated the Ast.
