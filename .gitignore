@@ -1,5 +1,8 @@
 *~
-dist/*
 *.hi
 *.o
 Setup.exe*
+.cabal-sandbox
+cabal.sandbox.config
+instances/dist
+utils/dist/
