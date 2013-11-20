@@ -193,7 +193,9 @@ import GHC.SYB.Instances
 import Data.List
 
 showSDoc_ :: SDoc -> String
-#if __GLASGOW_HASKELL__ < 706
+#if __GLASGOW_HASKELL__ >= 707
+showSDoc_ = showSDoc unsafeGlobalDynFlags    
+#elif __GLASGOW_HASKELL__ < 706
 showSDoc_ = showSDoc
 #else
 showSDoc_ = showSDoc tracingDynFlags
