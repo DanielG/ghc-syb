@@ -216,6 +216,7 @@ showData :: Data a => Stage -> Int -> a -> String
 showData stage n = 
   generic `ext1Q` list `extQ` string `extQ` fastString `extQ` srcSpan 
           `extQ` name `extQ` occName `extQ` moduleName `extQ` var `extQ` dataCon
+          `extQ` overLit
           `extQ` bagName `extQ` bagRdrName `extQ` bagVar `extQ` nameSet
           `extQ` postTcType `extQ` fixity
   where generic :: Data a => a -> String
@@ -235,6 +236,9 @@ showData stage n =
         srcSpan    = ("{"++) . (++"}") . showSDoc_ . ppr :: SrcSpan -> String
         var        = ("{Var: "++) . (++"}") . showSDoc_ . ppr :: Var -> String
         dataCon    = ("{DataCon: "++) . (++"}") . showSDoc_ . ppr :: DataCon -> String
+
+        overLit :: (HsOverLit RdrName) -> String
+        overLit    = ("{HsOverLit:"++) . (++"}") . showSDoc_ . ppr
 
         bagRdrName:: Bag (Located (HsBind RdrName)) -> String
         bagRdrName = ("{Bag(Located (HsBind RdrName)): "++) . (++"}") . list . bagToList 
