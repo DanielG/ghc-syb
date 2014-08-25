@@ -276,8 +276,6 @@ everythingStaged stage k z f x
 --  | otherwise = foldl k (f x) (gmapQ (everythingBut q k z f) x)
 
 
--- ++AZ++ additions
-
 -- Question: how to handle partial results in the otherwise step?
 everythingButStaged :: Stage -> (r -> r -> r) -> r -> GenericQ (r,Bool) -> GenericQ r
 everythingButStaged stage k z f x
@@ -289,23 +287,23 @@ everythingButStaged stage k z f x
         postTcType = const (stage<TypeChecker)                 :: PostTcType -> Bool
         fixity     = const (stage<Renamer)                     :: GHC.Fixity -> Bool
 
--- | Look up a subterm by means of a maybe-typed filter
+-- | Look up a subterm by means of a maybe-typed filter.
 somethingStaged :: Stage -> (Maybe u) -> GenericQ (Maybe u) -> GenericQ (Maybe u)
 
 -- "something" can be defined in terms of "everything"
 -- when a suitable "choice" operator is used for reduction
--- 
+--
 somethingStaged stage z = everythingStaged stage orElse z
 
 
--- | Apply a monadic transformation at least somewhere
+-- | Apply a monadic transformation at least somewhere.
+--
+-- The transformation is tried in a top-down manner and descends down if it
+-- fails to apply at the root of the term.  If the transformation fails to apply
+-- anywhere within the the term, the whole operation fails.
 somewhereStaged :: MonadPlus m => Stage -> GenericM m -> GenericM m
 
--- We try "f" in top-down manner, but descent into "x" when we fail
--- at the root of the term. The transformation fails if "f" fails
--- everywhere, say succeeds nowhere.
--- 
-somewhereStaged stage f x 
+somewhereStaged stage f x
   | (const False `extQ` postTcType `extQ` fixity `extQ` nameSet) x = mzero
   | otherwise = f x `mplus` gmapMp (somewhereStaged stage f) x
   where nameSet    = const (stage `elem` [Parser,TypeChecker]) :: NameSet -> Bool
@@ -314,7 +312,7 @@ somewhereStaged stage f x
 
 -- ---------------------------------------------------------------------
 
-{- 
+{-
 -- | Apply a transformation everywhere in bottom-up manner
 -- Note type GenericT = forall a. Data a => a -> a
 everywhereStaged :: Stage
@@ -324,7 +322,7 @@ everywhereStaged :: Stage
 -- Use gmapT to recurse into immediate subterms;
 -- recall: gmapT preserves the outermost constructor;
 -- post-process recursively transformed result via f
--- 
+--
 everywhereStaged stage f -- = f . gmapT (everywhere f)
   | (const False `extQ` postTcType `extQ` fixity `extQ` nameSet) = mzero
   | otherwise = f . gmapT (everywhere stage f)
@@ -345,6 +343,6 @@ everywhereMStaged stage f x
   where nameSet    = const (stage `elem` [Parser,TypeChecker]) :: NameSet -> Bool
         postTcType = const (stage<TypeChecker)                 :: PostTcType -> Bool
         fixity     = const (stage<Renamer)                     :: GHC.Fixity -> Bool
-                   
+
 
 
