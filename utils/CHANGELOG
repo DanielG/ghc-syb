@@ -1,0 +1,5 @@
+0.2.2
+
+ - Add staged variants for SYB combinators `somewhere`,
+   `everythingBut`, `something`, `everywhereM`.
+ - Avoid error thunks introduced in GHC 7.8.*
