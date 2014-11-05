@@ -218,7 +218,10 @@ showData stage n =
           `extQ` name `extQ` occName `extQ` moduleName `extQ` var `extQ` dataCon
           `extQ` overLit
           `extQ` bagName `extQ` bagRdrName `extQ` bagVar `extQ` nameSet
-          `extQ` postTcType `extQ` fixity
+#if __GLASGOW_HASKELL__ <= 708
+          `extQ` postTcType
+#endif
+          `extQ` fixity
   where generic :: Data a => a -> String
         generic t = indent n ++ "(" ++ showConstr (toConstr t)
                  ++ space (concat (intersperse " " (gmapQ (showData stage (n+1)) t))) ++ ")"
@@ -252,20 +255,28 @@ showData stage n =
                 | otherwise     
                 = ("{NameSet: "++) . (++"}") . list . nameSetToList 
 
+#if __GLASGOW_HASKELL__ <= 708
         postTcType | stage<TypeChecker = const "{!type placeholder here?!}" :: PostTcType -> String
                    | otherwise     = showSDoc_ . ppr :: Type -> String
-
+#endif
         fixity | stage<Renamer = const "{!fixity placeholder here?!}" :: GHC.Fixity -> String
                | otherwise     = ("{Fixity: "++) . (++"}") . showSDoc_ . ppr :: GHC.Fixity -> String
+
 
 -- | Like 'everything', but avoid known potholes, based on the 'Stage' that
 --   generated the Ast.
 everythingStaged :: Stage -> (r -> r -> r) -> r -> GenericQ r -> GenericQ r
 everythingStaged stage k z f x 
-  | (const False `extQ` postTcType `extQ` fixity `extQ` nameSet) x = z
+  | (const False
+#if __GLASGOW_HASKELL__ <= 708
+      `extQ` postTcType
+#endif
+      `extQ` fixity `extQ` nameSet) x = z
   | otherwise = foldl k (f x) (gmapQ (everythingStaged stage k z f) x)
   where nameSet    = const (stage `elem` [Parser,TypeChecker]) :: NameSet -> Bool
+#if __GLASGOW_HASKELL__ <= 708
         postTcType = const (stage<TypeChecker)                 :: PostTcType -> Bool
+#endif
         fixity     = const (stage<Renamer)                     :: GHC.Fixity -> Bool
 
 -- | A variation of 'everything', using a 'GenericQ Bool' to skip
@@ -279,12 +290,18 @@ everythingStaged stage k z f x
 -- Question: how to handle partial results in the otherwise step?
 everythingButStaged :: Stage -> (r -> r -> r) -> r -> GenericQ (r,Bool) -> GenericQ r
 everythingButStaged stage k z f x
-  | (const False `extQ` postTcType `extQ` fixity `extQ` nameSet) x = z
+  | (const False
+#if __GLASGOW_HASKELL__ <= 708
+       `extQ` postTcType
+#endif
+       `extQ` fixity `extQ` nameSet) x = z
   | stop == True = v
   | otherwise = foldl k v (gmapQ (everythingButStaged stage k z f) x)
   where (v, stop) = f x
         nameSet    = const (stage `elem` [Parser,TypeChecker]) :: NameSet -> Bool
+#if __GLASGOW_HASKELL__ <= 708
         postTcType = const (stage<TypeChecker)                 :: PostTcType -> Bool
+#endif
         fixity     = const (stage<Renamer)                     :: GHC.Fixity -> Bool
 
 -- | Look up a subterm by means of a maybe-typed filter.
@@ -304,10 +321,16 @@ somethingStaged stage z = everythingStaged stage orElse z
 somewhereStaged :: MonadPlus m => Stage -> GenericM m -> GenericM m
 
 somewhereStaged stage f x
-  | (const False `extQ` postTcType `extQ` fixity `extQ` nameSet) x = mzero
+  | (const False
+#if __GLASGOW_HASKELL__ <= 708
+       `extQ` postTcType
+#endif
+       `extQ` fixity `extQ` nameSet) x = mzero
   | otherwise = f x `mplus` gmapMp (somewhereStaged stage f) x
   where nameSet    = const (stage `elem` [Parser,TypeChecker]) :: NameSet -> Bool
+#if __GLASGOW_HASKELL__ <= 708
         postTcType = const (stage<TypeChecker)                 :: PostTcType -> Bool
+#endif
         fixity     = const (stage<Renamer)                     :: GHC.Fixity -> Bool
 
 -- ---------------------------------------------------------------------
@@ -337,12 +360,17 @@ everywhereMStaged :: Monad m => Stage -> GenericM m -> GenericM m
 
 -- Bottom-up order is also reflected in order of do-actions
 everywhereMStaged stage f x
-  | (const False `extQ` postTcType `extQ` fixity `extQ` nameSet) x = return x
+  | (const False
+#if __GLASGOW_HASKELL__ <= 708
+       `extQ` postTcType
+#endif
+       `extQ` fixity `extQ` nameSet) x = return x
   | otherwise = do x' <- gmapM (everywhereMStaged stage f) x
                    f x'
   where nameSet    = const (stage `elem` [Parser,TypeChecker]) :: NameSet -> Bool
+#if __GLASGOW_HASKELL__ <= 708
         postTcType = const (stage<TypeChecker)                 :: PostTcType -> Bool
+#endif
         fixity     = const (stage<Renamer)                     :: GHC.Fixity -> Bool
-
 
 
