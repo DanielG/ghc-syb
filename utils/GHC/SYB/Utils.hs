@@ -185,7 +185,7 @@ import qualified OccName(occNameString)
 import Bag(Bag,bagToList)
 import Var(Var)
 import FastString(FastString)
-import NameSet(NameSet,nameSetToList)
+import NameSet(NameSet,nameSetElems)
 
 #if __GLASGOW_HASKELL__ < 700
 import GHC.SYB.Instances
@@ -253,7 +253,7 @@ showData stage n =
         nameSet | stage `elem` [Parser,TypeChecker] 
                 = const ("{!NameSet placeholder here!}") :: NameSet -> String
                 | otherwise     
-                = ("{NameSet: "++) . (++"}") . list . nameSetToList 
+                = ("{NameSet: "++) . (++"}") . list . nameSetElems 
 
 #if __GLASGOW_HASKELL__ <= 708
         postTcType | stage<TypeChecker = const "{!type placeholder here?!}" :: PostTcType -> String
