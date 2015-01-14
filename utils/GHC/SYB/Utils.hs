@@ -185,14 +185,22 @@ import qualified OccName(occNameString)
 import Bag(Bag,bagToList)
 import Var(Var)
 import FastString(FastString)
+#if __GLASGOW_HASKELL__ >= 709
 import NameSet(NameSet,nameSetElems)
+#else
+import NameSet(NameSet,nameSetToList)
+#endif
 
 #if __GLASGOW_HASKELL__ < 700
 import GHC.SYB.Instances
-#endif 
+#endif
 
 import Control.Monad
 import Data.List
+
+#if __GLASGOW_HASKELL__ < 709
+nameSetElems = nameSetToList
+#endif
 
 showSDoc_ :: SDoc -> String
 #if __GLASGOW_HASKELL__ >= 707
