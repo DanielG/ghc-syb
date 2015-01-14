@@ -176,11 +176,11 @@ module GHC.SYB.Utils where
 import Data.Generics
 
 -- import qualified GHC.Paths
-import PprTyThing
+import PprTyThing()
 import DynFlags
-import GHC
-import Outputable
-import SrcLoc
+import GHC hiding (moduleName)
+import Outputable hiding (space)
+import SrcLoc()
 import qualified OccName(occNameString)
 import Bag(Bag,bagToList)
 import Var(Var)
@@ -199,6 +199,7 @@ import Control.Monad
 import Data.List
 
 #if __GLASGOW_HASKELL__ < 709
+nameSetElems :: NameSet -> [Name]
 nameSetElems = nameSetToList
 #endif
 
@@ -235,7 +236,7 @@ showData stage n =
                  ++ space (concat (intersperse " " (gmapQ (showData stage (n+1)) t))) ++ ")"
         space "" = ""
         space s  = ' ':s
-        indent n = "\n" ++ replicate n ' ' 
+        indent i = "\n" ++ replicate i ' '
         string     = show :: String -> String
         fastString = ("{FastString: "++) . (++"}") . show :: FastString -> String
         list l     = indent n ++ "[" 

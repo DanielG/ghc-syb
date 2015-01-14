@@ -28,5 +28,6 @@ library
 
   hs-source-dirs:  .
   extensions:      Rank2Types, CPP
+  ghc-options:    -Wall
 
   exposed-modules: GHC.SYB.Utils
