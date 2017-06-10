@@ -6,3 +6,4 @@ Setup.exe*
 cabal.sandbox.config
 instances/dist
 utils/dist/
+.stack-work/
