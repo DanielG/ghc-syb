@@ -1,34 +1,12 @@
-.PHONY: default test
+.PHONY: default test test-7.10 test-8.0
 
 default: test
 
-test:
-	# STACK_YAML=stack-7.8.yaml stack test
-	STACK_YAML=stack-7.10.yaml stack test
-	STACK_YAML=stack-8.0.yaml stack test
+test: test-7.10
 
+test-7.10:
+	stack --stack-yaml=stack-7.10.yaml test
 
-
-# HC=../ghc/ghc/stage2-inplace/ghc.exe
-# PKG=../ghc/utils/ghc-pkg/install-inplace/bin/ghc-pkg.exe 
-# SETUP=./Setup.exe
-#
-# main: build
-#
-# Setup.exe: Setup.hs
-# 	$(HC) --make $<
-#
-# configure:
-# 	$(SETUP) configure --with-compiler=$(HC) --with-hc-pkg=$(PKG) --user
-#
-# build:
-# 	$(SETUP) build
-#
-# install:
-# 	$(SETUP) install
-#
-# test:
-# 	./dist/build/test/test.exe
-#
-# clean:
-# 	$(SETUP)
+# This fails, but we keep it around if we ever want to fix it.
+test-8.0:
+	stack --stack-yaml=stack-8.0.yaml test --executable-profiling --test-arguments="+RTS -xc -RTS"
