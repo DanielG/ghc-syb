@@ -1,3 +1,8 @@
+0.2.3.1
+
+ - Fix build for 8.2.1 (by @achirkin)
+ - GHC 8.0+ is technically no longer supported (test suite fails)
+
 0.2.2
 
  - Add staged variants for SYB combinators `somewhere`,
