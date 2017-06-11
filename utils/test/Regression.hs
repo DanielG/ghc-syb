@@ -14,8 +14,8 @@ import GHC.SYB.Utils
 
 main :: IO ()
 main = do
-  pkg_dir <- getCurrentDirectory
-  let ex1 = pkg_dir </> "test" </> "test-cases" </> "GithubIssue9.hs"
+  let ex1 = "test" </> "test-cases" </> "GithubIssue9.hs"
+
   Ghc.runGhc (Just libdir) $ do
     dflags0 <- Ghc.getSessionDynFlags
     let dflags = dflags0
