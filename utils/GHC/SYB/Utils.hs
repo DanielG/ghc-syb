@@ -185,7 +185,7 @@ import qualified OccName(occNameString)
 import Bag(Bag,bagToList)
 import Var(Var)
 import FastString(FastString)
-#if __GLASGOW_HASKELL__ >= 800
+#if __GLASGOW_HASKELL__ >= 802
 import NameSet(NameSet,nameSetElemsStable)
 #elif __GLASGOW_HASKELL__ >= 709
 import NameSet(NameSet,nameSetElems)
@@ -200,7 +200,7 @@ import GHC.SYB.Instances
 import Control.Monad
 import Data.List
 
-#if __GLASGOW_HASKELL__ >= 800
+#if __GLASGOW_HASKELL__ >= 802
 nameSetElems :: NameSet -> [Name]
 nameSetElems = nameSetElemsStable
 #elif __GLASGOW_HASKELL__ < 709
