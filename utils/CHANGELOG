@@ -1,3 +1,11 @@
+0.2.3.3
+
+ - Fix incorrect CPP conditionals for GHC 8.0 (by @DanielG)
+
+0.2.3.2
+
+ - Fix packaging of test suite
+
 0.2.3.1
 
  - Fix build for 8.2.1 (by @achirkin)
