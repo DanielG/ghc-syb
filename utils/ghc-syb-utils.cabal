@@ -4,8 +4,8 @@ license:         BSD3
 license-file:    LICENSE
 author:          Claus Reinke
 copyright:       (c) Claus Reinke 2008
-maintainer:      Thomas Schilling <nominolo@googlemail.com>
-homepage:        http://github.com/nominolo/ghc-syb
+maintainer:      Daniel Gröber <dxld@darkboxed.org>
+homepage:        https://github.com/DanielG/ghc-syb
 description:     Scrap Your Boilerplate utilities for the GHC API.
 synopsis:        Scrap Your Boilerplate utilities for the GHC API.
 category:        Development

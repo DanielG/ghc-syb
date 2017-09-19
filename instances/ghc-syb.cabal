@@ -4,10 +4,10 @@ license:         BSD3
 license-file:    LICENSE
 author:          Claus Reinke
 copyright:       (c) Claus Reinke 2008
-maintainer:      Thomas Schilling <nominolo@googlemail.com>
-homepage:        http://github.com/nominolo/ghc-syb
-description:     Data and Typeable instances for the GHC API.
-synopsis:        Data and Typeable instances for the GHC API.
+maintainer:      Daniel Gröber <dxld@darkboxed.org>
+homepage:        https://github.com/DanielG/ghc-syb
+synopsis:        Data and Typeable instances for the GHC API for GHC < 7.0
+description:     Data and Typeable instances for the GHC API for GHC < 7.0
 category:        Development
 stability:       provisional
 build-type:      Simple
