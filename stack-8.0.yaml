@@ -1,6 +1,0 @@
-resolver: ghc-8.0.2
-packages:
-  - ./utils
-extra-deps:
-  - syb-0.7
-  - ghc-paths-0.1.0.9
