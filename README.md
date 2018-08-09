@@ -1,7 +1,7 @@
 # ghc-syb & ghc-syb-utils
 
 This repo provides [SYB][syb] instances for GHC < 7.0 and SYB utils
-for GHC >= 7.0.
+for GHC >= 7.10.
 
 [syb]: https://hackage.haskell.org/package/syb
 

@@ -1,3 +1,9 @@
+0.3.0.0
+
+ - Drop support for GHC <=7.8
+ - Add official support for GHC 8.0, 8.2 and 8.4
+ - Remove `showData` API. As a replacement you can use GHC's HsDumpAst instead.
+
 0.2.3.3
 
  - Fix incorrect CPP conditionals for GHC 8.0 (by @DanielG)
