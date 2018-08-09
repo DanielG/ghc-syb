@@ -199,6 +199,7 @@ import GHC.SYB.Instances
 
 import Control.Monad
 import Data.List
+import Data.ByteString (ByteString)
 
 #if __GLASGOW_HASKELL__ >= 802
 nameSetElems :: NameSet -> [Name]
@@ -228,7 +229,7 @@ data Stage = Parser | Renamer | TypeChecker deriving (Eq,Ord,Show)
 --   (based on the 'Stage' that generated the Ast)
 showData :: Data a => Stage -> Int -> a -> String
 showData stage n = 
-  generic `ext1Q` list `extQ` string `extQ` fastString `extQ` srcSpan 
+  generic `ext1Q` list `extQ` string `extQ` fastString `extQ` byteString `extQ` srcSpan
           `extQ` name `extQ` occName `extQ` moduleName `extQ` var `extQ` dataCon
           `extQ` overLit
           `extQ` bagName `extQ` bagRdrName `extQ` bagVar `extQ` nameSet
@@ -244,7 +245,8 @@ showData stage n =
         indent i = "\n" ++ replicate i ' '
         string     = show :: String -> String
         fastString = ("{FastString: "++) . (++"}") . show :: FastString -> String
-        list l     = indent n ++ "[" 
+        byteString = ("{ByteString: "++) . (++"}") . show :: ByteString -> String
+        list l     = indent n ++ "["
                               ++ concat (intersperse "," (map (showData stage (n+1)) l)) ++ "]"
 
         name       = ("{Name: "++) . (++"}") . showSDoc_ . ppr :: Name -> String
