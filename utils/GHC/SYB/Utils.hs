@@ -8,7 +8,6 @@ module GHC.SYB.Utils where
 
 import Data.Generics
 
--- import qualified GHC.Paths
 import PprTyThing()
 import GHC hiding (moduleName)
 import SrcLoc()
@@ -28,23 +27,17 @@ data Stage = Parser | Renamer | TypeChecker deriving (Eq,Ord,Show)
 -- | Like 'everything', but avoid known potholes, based on the 'Stage' that
 --   generated the Ast.
 everythingStaged :: Stage -> (r -> r -> r) -> r -> GenericQ r -> GenericQ r
-everythingStaged stage k z f x 
+everythingStaged stage k z f x
   | (const False
-#if __GLASGOW_HASKELL__ <= 708
-      `extQ` postTcType
-#endif
       `extQ` fixity `extQ` nameSet) x = z
   | otherwise = foldl k (f x) (gmapQ (everythingStaged stage k z f) x)
   where nameSet    = const (stage `elem` [Parser,TypeChecker]) :: NameSet -> Bool
-#if __GLASGOW_HASKELL__ <= 708
-        postTcType = const (stage<TypeChecker)                 :: PostTcType -> Bool
-#endif
         fixity     = const (stage<Renamer)                     :: GHC.Fixity -> Bool
 
 -- | A variation of 'everything', using a 'GenericQ Bool' to skip
 --   parts of the input 'Data'.
 --everythingBut :: GenericQ Bool -> (r -> r -> r) -> r -> GenericQ r -> GenericQ r
---everythingBut q k z f x 
+--everythingBut q k z f x
 --  | q x       = z
 --  | otherwise = foldl k (f x) (gmapQ (everythingBut q k z f) x)
 
@@ -53,17 +46,11 @@ everythingStaged stage k z f x
 everythingButStaged :: Stage -> (r -> r -> r) -> r -> GenericQ (r,Bool) -> GenericQ r
 everythingButStaged stage k z f x
   | (const False
-#if __GLASGOW_HASKELL__ <= 708
-       `extQ` postTcType
-#endif
        `extQ` fixity `extQ` nameSet) x = z
   | stop == True = v
   | otherwise = foldl k v (gmapQ (everythingButStaged stage k z f) x)
   where (v, stop) = f x
         nameSet    = const (stage `elem` [Parser,TypeChecker]) :: NameSet -> Bool
-#if __GLASGOW_HASKELL__ <= 708
-        postTcType = const (stage<TypeChecker)                 :: PostTcType -> Bool
-#endif
         fixity     = const (stage<Renamer)                     :: GHC.Fixity -> Bool
 
 -- | Look up a subterm by means of a maybe-typed filter.
@@ -84,15 +71,9 @@ somewhereStaged :: MonadPlus m => Stage -> GenericM m -> GenericM m
 
 somewhereStaged stage f x
   | (const False
-#if __GLASGOW_HASKELL__ <= 708
-       `extQ` postTcType
-#endif
        `extQ` fixity `extQ` nameSet) x = mzero
   | otherwise = f x `mplus` gmapMp (somewhereStaged stage f) x
   where nameSet    = const (stage `elem` [Parser,TypeChecker]) :: NameSet -> Bool
-#if __GLASGOW_HASKELL__ <= 708
-        postTcType = const (stage<TypeChecker)                 :: PostTcType -> Bool
-#endif
         fixity     = const (stage<Renamer)                     :: GHC.Fixity -> Bool
 
 -- ---------------------------------------------------------------------
@@ -123,16 +104,8 @@ everywhereMStaged :: Monad m => Stage -> GenericM m -> GenericM m
 -- Bottom-up order is also reflected in order of do-actions
 everywhereMStaged stage f x
   | (const False
-#if __GLASGOW_HASKELL__ <= 708
-       `extQ` postTcType
-#endif
        `extQ` fixity `extQ` nameSet) x = return x
   | otherwise = do x' <- gmapM (everywhereMStaged stage f) x
                    f x'
   where nameSet    = const (stage `elem` [Parser,TypeChecker]) :: NameSet -> Bool
-#if __GLASGOW_HASKELL__ <= 708
-        postTcType = const (stage<TypeChecker)                 :: PostTcType -> Bool
-#endif
         fixity     = const (stage<Renamer)                     :: GHC.Fixity -> Bool
-
-
